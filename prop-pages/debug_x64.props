@@ -3,8 +3,8 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <ExternalIncludePath>$(WindowsSDK_IncludePath);$(VC_IncludePath);$(SolutionDir)dependencies\glm-0.9.9.8\;$(SolutionDir)dependencies\glfw-3.3.8\include\;$(SolutionDir)dependencies\VulkanSDK-1.3.268.0\include\</ExternalIncludePath>
-    <LibraryPath>$(SolutionDir)dependencies\glfw-3.3.8\bin;$(SolutionDir)dependencies\VulkanSDK-1.3.268.0\lib\;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
+    <ExternalIncludePath>$(WindowsSDK_IncludePath);$(VC_IncludePath);$(SolutionDir)dependencies\VulkanSDK-1.3.268.0\include\;$(SolutionDir)dependencies\glm-0.9.9.8\;$(SolutionDir)dependencies\glfw-3.3.8\include\</ExternalIncludePath>
+    <LibraryPath>$(SolutionDir)dependencies\VulkanSDK-1.3.268.0\lib\;$(SolutionDir)dependencies\glfw-3.3.8\bin;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
     <_PropertySheetDisplayName>debug_x64</_PropertySheetDisplayName>
     <OutDir>$(SolutionDir)bin\$(ProjectName)\$(Configuration)-$(Platform)\</OutDir>
     <IntDir>$(SolutionDir).tmp\$(ProjectName)\$(Configuration)-$(Platform)\</IntDir>
@@ -17,7 +17,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>GLFW_DLL;_CRT_SECURE_NO_WARNINGS;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <ConformanceMode>Default</ConformanceMode>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
