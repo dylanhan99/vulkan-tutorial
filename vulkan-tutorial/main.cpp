@@ -2,9 +2,16 @@
 #include "Application.h"
 
 int main() {
-    Application app{};
+    try
+    {
+        Application app{};
+        app.Run();
+    }
+    catch (std::exception e)
+    {
+        std::cout << e.what() << std::endl;
+        return EXIT_FAILURE;
+    }
 
-    app.Run();
-
-    return 0;
+    return EXIT_SUCCESS;
 }
