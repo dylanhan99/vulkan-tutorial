@@ -17,8 +17,10 @@ private:
 
 private:
 	void CreateInstance();
+	void SetupDebugMessenger();
 
 private:
 	GLFWwindow* m_pWindow;
 	VkInstance m_vInstance;
+	VkDebugUtilsMessengerEXT m_DebugMessenger;
 };
