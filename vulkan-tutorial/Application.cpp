@@ -11,6 +11,14 @@ const bool g_EnableValidationLayers{ false };
 const bool g_EnableValidationLayers{ true };
 #endif
 
+struct QueueFamilyIndices
+{
+	std::optional<uint32_t> GraphicsFamily;
+	
+	bool IsComplete() { return GraphicsFamily.has_value(); }
+		
+};
+
 #pragma region Validation Layer Stuff
 bool CheckValidationLayerSupport()
 {
@@ -99,6 +107,73 @@ std::vector<const char*> GetRequiredExtensions()
 }
 #pragma endregion
 
+
+#pragma region Queue Family Stuff
+QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device)
+{
+	QueueFamilyIndices indices{};
+
+	uint32_t queueFamilyCount{};
+	vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
+
+	std::vector<VkQueueFamilyProperties> queueFamilies{queueFamilyCount};
+	vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies.data());
+
+	int i = 0;
+	for (VkQueueFamilyProperties const& queueFamily : queueFamilies)
+	{
+		if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
+			indices.GraphicsFamily = i;
+
+		if (indices.IsComplete())
+			break;
+
+		++i;
+	}
+
+	return indices;
+}
+#pragma endregion
+
+#pragma region Physical Device Stuff
+bool IsDeviceSuitable(VkPhysicalDevice device)
+{
+	//VkPhysicalDeviceProperties deviceProps{};
+	//VkPhysicalDeviceFeatures deviceFeats{};
+	//vkGetPhysicalDeviceProperties(device, &deviceProps);
+	//vkGetPhysicalDeviceFeatures(device, &deviceFeats);
+	//
+	//return	deviceProps.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU &&
+	//		deviceFeats.geometryShader;
+
+	QueueFamilyIndices indices = FindQueueFamilies(device);
+	return indices.IsComplete();
+}
+
+int RateDeviceSuitability(VkPhysicalDevice device)
+{
+	VkPhysicalDeviceProperties deviceProps{};
+	VkPhysicalDeviceFeatures deviceFeats{};
+	vkGetPhysicalDeviceProperties(device, &deviceProps);
+	vkGetPhysicalDeviceFeatures(device, &deviceFeats);
+
+	int score = 0;
+	
+	// Discrete GPUs have significant performance advantage
+	if (deviceProps.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
+		score += 1000;
+
+	// Max possible size of textures affect graphics quality
+	score += deviceProps.limits.maxImageDimension2D;
+
+	// Application can't function without geometyry shaders
+	if (!deviceFeats.geometryShader)
+		score = 0;
+
+	return score;
+}
+#pragma endregion
+
 void Application::Run()
 {
 	InitWindow();
@@ -119,6 +194,7 @@ void Application::InitVulkan()
 {
 	CreateInstance();
 	SetupDebugMessenger();
+	PickPhysicalDevice();
 }
 
 void Application::MainLoop()
@@ -208,4 +284,47 @@ void Application::SetupDebugMessenger()
 
 	if (CreateDebugUtilsMessagerEXT(m_vInstance, &createInfo, nullptr, &m_DebugMessenger) != VK_SUCCESS)
 		throw std::runtime_error("Failed to set up debug messenger!");
+}
+
+void Application::PickPhysicalDevice()
+{
+	uint32_t deviceCount = 0;
+	vkEnumeratePhysicalDevices(m_vInstance, &deviceCount, nullptr);
+
+	if (!deviceCount)
+		throw std::runtime_error("Failed to find GPUs with Vulkan support!");
+
+	std::vector<VkPhysicalDevice> devices(deviceCount);
+	vkEnumeratePhysicalDevices(m_vInstance, &deviceCount, devices.data());
+
+	// More straight forward version for teh sake of this tutorial
+	for (VkPhysicalDevice const& device : devices)
+	{
+		if (IsDeviceSuitable(device))
+		{
+			m_PhysicalDevice = device;
+			break;
+		}
+	}
+
+	if (m_PhysicalDevice == VK_NULL_HANDLE)
+		throw std::runtime_error("Failed to find suitable GPU!");
+
+
+	{ // Example using a score system to identify best graphgics card.
+		// Finding best quality graphics card
+		// Multimap will autosort candidates by increasing score
+		//std::multimap<int, VkPhysicalDevice> candidates{};
+		//
+		//for (VkPhysicalDevice const& device : devices)
+		//{
+		//	int score = RateDeviceSuitability(device);
+		//	candidates.insert(std::make_pair(score, device));
+		//}
+
+		//if (candidates.rbegin()->first > 0)
+		//	m_PhysicalDevice = candidates.rbegin()->second;
+		//else
+		//	throw std::runtime_error("Failed to find suitable GPU!");
+	}
 }

@@ -18,9 +18,11 @@ private:
 private:
 	void CreateInstance();
 	void SetupDebugMessenger();
+	void PickPhysicalDevice();
 
 private:
-	GLFWwindow* m_pWindow;
-	VkInstance m_vInstance;
-	VkDebugUtilsMessengerEXT m_DebugMessenger;
+	GLFWwindow* m_pWindow{nullptr};
+	VkInstance m_vInstance{VK_NULL_HANDLE};
+	VkDebugUtilsMessengerEXT m_DebugMessenger{VK_NULL_HANDLE};
+	VkPhysicalDevice m_PhysicalDevice{VK_NULL_HANDLE}; // This is the graphics card
 };
